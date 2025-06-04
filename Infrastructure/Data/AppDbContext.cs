@@ -12,5 +12,8 @@ public class AppDbContext : IdentityDbContext<AppUser>
     }
 
     public DbSet<Question> Questions { get; set; }
+    public DbSet<Subject> Subjects { get; set; }
+    public DbSet<StudentAnswer> StudentAnswers { get; set; }
+    public DbSet<StudentQuiz> StudentQuizzes { get; set; }
     
 }

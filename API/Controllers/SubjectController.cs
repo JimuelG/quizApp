@@ -1,10 +1,14 @@
 using Core.Entities;
 using Core.Interfaces;
+using Infrastructure.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-public class SubjectController(IGenericRepository<Subject> repo) : BaseApiController
+// [Authorize(Roles = "Admin")]
+public class SubjectController(IGenericRepository<Subject> repo,
+    AppDbContext context) : BaseApiController
 {
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<Subject>>> GetSubjects()
@@ -22,9 +26,10 @@ public class SubjectController(IGenericRepository<Subject> repo) : BaseApiContro
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateSubject(Subject subject)
+    public async Task<ActionResult> CreateSubject([FromBody] Subject subject)
     {
-        repo.Add(subject);
+        context.Subjects.Add(subject);
+        await context.SaveChangesAsync();
         return Ok(subject);
     }
 

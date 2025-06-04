@@ -1,12 +1,15 @@
 using API.DTOs;
 using Core.Entities;
 using Core.Interfaces;
+using Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
-public class QuestionsController(IGenericRepository<Question> repo) : BaseApiController
+public class QuestionsController(IGenericRepository<Question> repo,
+    AppDbContext context) : BaseApiController
 {
 
     [HttpGet]
@@ -23,10 +26,27 @@ public class QuestionsController(IGenericRepository<Question> repo) : BaseApiCon
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateQuestion(Question question)
+    public async Task<ActionResult> CreateQuestion([FromBody] CreateQuestionDto dto)
     {
-        repo.Add(question);
-        await repo.SaveChangesAsync();
+        if (!Enum.TryParse<QuestionCategory>(dto.Category, true, out var categoryEnum))
+            return BadRequest("Invalid category. Use 'Prelim' or 'Midterm'");
+
+        var subjectExists = await context.Subjects.AnyAsync(s => s.Id == dto.SubjectId);
+        if (!subjectExists) return NotFound("Subject not found");
+
+        var question = new Question
+        {
+            QuestionText = dto.QuestionText,
+            Choices = dto.Choices.ToArray(),
+            CorrectAnswer = dto.CorrectAnswer,
+            Type = dto.Type,
+            SubjectId = dto.SubjectId,
+            Category = categoryEnum
+        };
+
+        context.Questions.Add(question);
+        await context.SaveChangesAsync();
+
         return Ok(question);
     }
 }

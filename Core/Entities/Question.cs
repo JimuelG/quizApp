@@ -8,7 +8,7 @@ public class Question : BaseEntity
     public string Type { get; set; } = string.Empty;
     
     public int SubjectId { get; set; }
-    public required Subject Subject { get; set; }
+    public Subject Subject { get; set; }
 
     public QuestionCategory Category { get; set; }
 }
