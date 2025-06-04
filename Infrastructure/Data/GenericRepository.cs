@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data;
 
-public class GenericRepository<T>(QuizContext context) : IGenericRepository<T> where T : BaseEntity
+public class GenericRepository<T>(AppDbContext context) : IGenericRepository<T> where T : BaseEntity
 {
     public void Add(T entity)
     {
