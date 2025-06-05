@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace API.DTOs;
+namespace Shared.DTOs;
 
 public class CreateQuestionDto
 {
