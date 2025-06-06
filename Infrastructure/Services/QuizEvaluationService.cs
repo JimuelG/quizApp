@@ -25,42 +25,42 @@ public class QuizEvaluationService(IUnitOfWork unit) : IQuizEvaluationService
             {
                 correct++;
             }
-
-            double scorePercent = total > 0 ? (double)correct / total * 100 : 0;
-
-            var studentQuiz = new StudentQuiz
-            {
-                StudentId = studentId,
-                TotalQuestions = total,
-                CorrectAnswers = correct,
-                ScorePercentage = scorePercent,
-                DateTaken = DateTime.UtcNow
-            };
-
-            foreach (var answer in dto.Answers)
-            {
-                var studentAnswer = new StudentAnswer
-                {
-                    QuestionId = answer.QuestionId,
-                    AnswerGiven = answer.Answer,
-                    IsCorrect = questions.Any(q => q.Id == answer.QuestionId && q.CorrectAnswer.Trim()
-                        .ToLower() == answer.Answer.Trim().ToLower())
-                };
-                studentQuiz.StundentAnswers.Add(studentAnswer);
-            }
-
-            unit.Repository<StudentQuiz>().Add(studentQuiz);
-
-            await unit.Complete();
-
-            return new StudentQuizResultDto
-            {
-                QuizId = studentQuiz.Id,
-                studentId = studentQuiz.StudentId,
-                TotalQuestions = studentQuiz.TotalQuestions,
-                CorrectAnswer = studentQuiz.CorrectAnswers,
-                ScorePercentage = studentQuiz.ScorePercentage
-            };
         }
+        double scorePercent = total > 0 ? (double)correct / total * 100 : 0;
+
+        var studentQuiz = new StudentQuiz
+        {
+            StudentId = studentId,
+            TotalQuestions = total,
+            CorrectAnswers = correct,
+            ScorePercentage = scorePercent,
+            DateTaken = DateTime.UtcNow
+        };
+
+        foreach (var answer in dto.Answers)
+        {
+            var studentAnswer = new StudentAnswer
+            {
+                QuestionId = answer.QuestionId,
+                AnswerGiven = answer.SelectedAnswer,
+                IsCorrect = questions.Any(q => q.Id == answer.QuestionId && q.CorrectAnswer.Trim()
+                    .ToLower() == answer.SelectedAnswer.Trim().ToLower())
+            };
+            studentQuiz.StudentAnswers.Add(studentAnswer);
+        }
+
+        unit.Repository<StudentQuiz>().Add(studentQuiz);
+
+        await unit.Complete();
+
+        return new StudentQuizResultDto
+        {
+            QuizId = studentQuiz.Id,
+            studentId = studentQuiz.StudentId,
+            TotalQuestions = studentQuiz.TotalQuestions,
+            CorrectAnswer = studentQuiz.CorrectAnswers,
+            ScorePercentage = studentQuiz.ScorePercentage
+        };
+    
     }
 }

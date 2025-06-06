@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Core.Entities;
 using Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -40,5 +41,10 @@ public class GenericRepository<T>(AppDbContext context) : IGenericRepository<T> 
     public async Task<int> SaveChangesAsync()
     {
         return await context.SaveChangesAsync();
+    }
+
+    public async Task<IReadOnlyList<T>> ListAsync(Expression<Func<T, bool>> predicate)
+    {
+        return await context.Set<T>().Where(predicate).ToListAsync();
     }
 }

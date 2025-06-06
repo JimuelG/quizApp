@@ -42,6 +42,13 @@ public class AccountController(UserManager<AppUser> userManager,
 
         var token = await tokenService.CreateTokenAsync(user, userManager);
 
-        return Ok(new { token });
+        return Ok(new
+        {
+            email = user.Email,
+            role = user.Role,
+            token
+        });
     }
+
+
 }

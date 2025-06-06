@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using Core.Interfaces;
 using Infrastructure.Data;
@@ -37,7 +38,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = builder.Configuration["JWT:Audience"],
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(key),
-            ValidateLifetime = true
+            ValidateLifetime = true,
+            RoleClaimType = "role"
         };
     });
 

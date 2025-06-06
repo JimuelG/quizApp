@@ -1,4 +1,5 @@
 using Core.Entities;
+using Infrastructure.Config;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -15,5 +16,10 @@ public class AppDbContext : IdentityDbContext<AppUser>
     public DbSet<Subject> Subjects { get; set; }
     public DbSet<StudentAnswer> StudentAnswers { get; set; }
     public DbSet<StudentQuiz> StudentQuizzes { get; set; }
-    
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+        builder.ApplyConfigurationsFromAssembly(typeof(StudentQuizConfiguration).Assembly);
+    }
 }
