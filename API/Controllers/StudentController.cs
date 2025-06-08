@@ -5,13 +5,13 @@ using Shared.Interfaces;
 
 namespace API.Controllers;
 
-[Authorize(Roles = "student")]
+[Authorize(Roles = "Student")]
 public class StudentController(IQuizEvaluationService quizEvaluationService) : BaseApiController
 {
     [HttpPost("submit")]
     public async Task<ActionResult> SubmitQuiz([FromBody] QuizSubmissionDto submissionDto)
     {
-        string studentId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        string studentId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value!;
 
         if (string.IsNullOrEmpty(studentId))
         {
