@@ -29,7 +29,10 @@ public class StudentController(IQuizEvaluationService quizEvaluationService) : B
     }
 
     [HttpGet("test")]
-    public IActionResult TestRoute() => Ok("StudentController is active");
-
+    public IActionResult Test()
+    {
+        var authType = User.Identity?.AuthenticationType;
+        return Ok($"Authenticated via: {authType}");
+    }
 
 }

@@ -22,20 +22,21 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IQuizEvaluationService, QuizEvaluationService>();
-builder.Services.AddIdentity<AppUser, IdentityRole>()
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<SignInManager<AppUser>>();
+builder.Services.AddIdentityCore<AppUser>(options =>
+{
+    
+})
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 builder.Services.AddScoped<TokenService>();
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-});
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(Options =>
+    .AddJwtBearer(options =>
     {
         var key = Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]!);
-        Options.TokenValidationParameters = new TokenValidationParameters
+        options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidIssuer = builder.Configuration["JWT:Issuer"],
@@ -48,6 +49,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             NameClaimType = ClaimTypes.NameIdentifier
         };
     });
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Events.OnRedirectToLogin = context =>
+    {
+        context.Response.StatusCode = 401;
+        return Task.CompletedTask;
+    };
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        context.Response.StatusCode = 403;
+        return Task.CompletedTask;
+    };
+});
 
 var app = builder.Build();
 

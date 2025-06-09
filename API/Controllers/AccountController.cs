@@ -44,11 +44,11 @@ public class AccountController(UserManager<AppUser> userManager,
 
         return Ok(new
         {
+            username = user.UserName,
             email = user.Email,
             role = user.Role,
             token
         });
     }
-
-
+    
 }
